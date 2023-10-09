@@ -5,6 +5,9 @@ namespace Modules\Testimonial\Http\Controllers;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Modules\Testimonial\Models\User;
+
+use Hash;
 
 class TestimonialController extends Controller
 {
@@ -17,63 +20,72 @@ class TestimonialController extends Controller
         return view('testimonial::index');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     * @return Renderable
-     */
-    public function create()
-    {
-        return view('testimonial::create');
+
+    public function login(){
+        return view('testimonial::signin');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     * @param Request $request
-     * @return Renderable
-     */
-    public function store(Request $request)
-    {
-        //
+    public function userlogin(Request $request){
+        $request->validate([
+            'email' => 'required',
+            'password' => 'required',
+        ],[
+            'email.required' => 'this is required',
+            'password.required' => 'this is required',
+        ]);
+
+        $creadentials = $request->only(['email', 'password']);
+
+        // dd($creadentials);
+
+        $username = User::where('email', $creadentials['email'])->first();
+
+        $password = Hash::check($creadentials['password'], $username->password);
+        dd($password);
+
+        if($username && $password){
+            return 1;
+        } else {
+            return 0;
+        }
     }
 
-    /**
-     * Show the specified resource.
-     * @param int $id
-     * @return Renderable
-     */
-    public function show($id)
-    {
-        return view('testimonial::show');
+    public function signup(){
+        return view('testimonial::signup');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     * @param int $id
-     * @return Renderable
-     */
-    public function edit($id)
-    {
-        return view('testimonial::edit');
-    }
+    public function usersignup(Request $request){
 
-    /**
-     * Update the specified resource in storage.
-     * @param Request $request
-     * @param int $id
-     * @return Renderable
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
+        // dd($request);
+        $request->validate([
+            'username' => 'required',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:8'
+        ],
+        [
+            'username.required' => 'username is required',
+            'email.unique' => 'email must be unique',
+            'password.min' => 'password must be at least 8 characters long',
+        ]);
 
-    /**
-     * Remove the specified resource from storage.
-     * @param int $id
-     * @return Renderable
-     */
-    public function destroy($id)
-    {
-        //
+        // if($validator->fails()){
+        //     return redirect()->back()->with('error', 'email already in use');
+        // }
+
+        $user = new User();
+        $email = 
+
+        $user->fill($request->all());
+        
+
+        if($user->save()){
+            return 1;
+        } else {
+            return 0;
+        }
+
+        // $request->password = Hash::make($request->input('password'));
+
+        
     }
 }

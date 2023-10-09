@@ -12,5 +12,17 @@
 */
 
 Route::prefix('testimonial')->group(function() {
-    Route::get('/', 'TestimonialController@index');
+    Route::get('/', 'TestimonialController@index')->name('user.testimonial');
+});
+
+
+Route::prefix('testimonial')->group(function() {
+    Route::get('/login', 'TestimonialController@login')->name('testimonial.signin');
+    Route::post('/user/login', 'TestimonialController@userlogin')->name('testimonial.userlogin');
+    
+});
+
+Route::prefix('testimonial')->group(function() {
+    Route::get('/signup', 'TestimonialController@signup')->name('testimonial.signup');
+    Route::post('/user/signup', 'TestimonialController@usersignup')->name('testimonial.usersignup');
 });
